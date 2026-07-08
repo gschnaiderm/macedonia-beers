@@ -48,7 +48,7 @@ export function Dropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`inline-flex w-full items-center justify-center gap-1 transition-colors font-medium ${titleColor} ${hoverColor}`}
+        className={`inline-flex w-full items-center justify-center gap-1 transition-colors font-semibold ${titleColor} ${hoverColor}`}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >

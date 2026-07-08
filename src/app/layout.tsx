@@ -35,7 +35,7 @@ export default function RootLayout({
                 <img src="/logo.jpg" alt="Macedonia Cervezas" className="h-10 w-10 shrink-0 rounded-full object-cover border border-red-200" />
                 <span className="hidden sm:inline text-xl font-bold tracking-tight text-red-700">Macedonia Cervezas</span>
               </div>
-              <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium">
+              <nav className="flex items-center gap-4 sm:gap-6 text-sm font-semibold">
                 <Dropdown
                   title="Bebidas"
                   options={[
