@@ -9,6 +9,7 @@ export const products = pgTable("products", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   category: productCategoryEnum("category").notNull(),
+  imageUrl: varchar("image_url", { length: 2048 }),
   attributes: jsonb("attributes").$type<ProductsAttributes>(),
 });
 
