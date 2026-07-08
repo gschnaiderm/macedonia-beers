@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { AuthControls } from "../components/auth-controls";
+import { Dropdown } from "../components/dropdown";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -35,7 +36,16 @@ export default function RootLayout({
                 <span className="hidden sm:inline text-xl font-bold tracking-tight text-red-700">Macedonia Cervezas</span>
               </div>
               <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium">
-                <a href="#" className="text-zinc-600 hover:text-red-600 transition-colors">Tienda</a>
+                <Dropdown
+                  title="Bebidas"
+                  options={[
+                    { label: "Cervezas", href: "/cervezas", dotColorClass: "bg-amber-500" },
+                    { label: "Espirituosas", href: "/espirituosas", dotColorClass: "bg-violet-500" },
+                    { label: "Vermouth", href: "/vermouth", dotColorClass: "bg-rose-600" }
+                  ]}
+                  titleColor="text-zinc-600"
+                  hoverColor="hover:text-red-600"
+                />
                 <a href="#" className="text-zinc-600 hover:text-red-600 transition-colors">Alquiler</a>
                 <AuthControls />
               </nav>
