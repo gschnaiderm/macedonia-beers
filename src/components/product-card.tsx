@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { BeerAttributes } from "@/db/types";
+import type { CategoryMetadata } from "@/db/types";
 
 interface StockOption {
   sizeCm3: number;
@@ -10,16 +10,16 @@ interface ProductCardProps {
   id: number;
   name: string;
   description: string | null;
-  category: "beer" | "vermouth" | "spirit" | "merch" | "rental_equipment";
+  categoryMetadata?: CategoryMetadata | null;
   imageUrl: string | null;
   stockOptions: StockOption[];
-  attributes: unknown; // Raw JSONB
+  attributes: any; // Raw JSONB
 }
 
 export function ProductCard({
   name,
   description,
-  category,
+  categoryMetadata,
   imageUrl,
   stockOptions,
   attributes
@@ -27,26 +27,29 @@ export function ProductCard({
 
   // Strategy to render badges based on product category
   const renderBadges = () => {
-    if (category === "beer" && attributes) {
-      const beerAttrs = attributes as BeerAttributes;
-      return (
-        <div className="flex gap-2 mt-3">
-          {beerAttrs.abv && (
-            <span className="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
-              {beerAttrs.abv}% ABV
-            </span>
-          )}
-          {beerAttrs.ibu && (
-            <span className="inline-flex items-center rounded-md bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">
-              {beerAttrs.ibu} IBU
-            </span>
-          )}
-        </div>
-      );
-    }
+    if (!categoryMetadata?.attributesSchema || !attributes) return null;
+    
+    const badges = categoryMetadata.attributesSchema
+      .filter(schemaItem => schemaItem.renderAsBadge)
+      .map(schemaItem => {
+        const val = attributes[schemaItem.key as keyof typeof attributes];
+        if (val === undefined || val === null) return null;
+        
+        return (
+          <span key={schemaItem.key} className="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+            {schemaItem.label}: {val}{schemaItem.unit || ""}
+          </span>
+        );
+      })
+      .filter(Boolean);
+      
+    if (badges.length === 0) return null;
 
-    // Extensible for more categories (e.g., else if category === 'vermouth')
-    return null;
+    return (
+      <div className="flex flex-wrap gap-2 mt-3">
+        {badges}
+      </div>
+    );
   };
 
   const hasStock = stockOptions.length > 0;

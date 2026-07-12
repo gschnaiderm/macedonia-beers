@@ -39,7 +39,7 @@ export default async function Home() {
                 id={product.id}
                 name={product.name}
                 description={product.description}
-                category={product.category}
+                categoryMetadata={product.categoryMetadata as any}
                 imageUrl={product.imageUrl}
                 stockOptions={product.stockOptions}
                 attributes={product.attributes}
