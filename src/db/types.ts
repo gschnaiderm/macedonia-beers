@@ -12,3 +12,16 @@ export type BeerAttributes = z.infer<typeof beerAttributesSchema>;
 
 // union type for all products attributes
 export type ProductsAttributes = BeerAttributes;
+
+// EAV JSON Schema definitions for categories metadata
+export interface CategoryAttributeDefinition {
+  key: string;
+  label: string;
+  type: "number" | "string";
+  unit: string | null;
+  renderAsBadge: boolean;
+}
+
+export interface CategoryMetadata {
+  attributesSchema?: CategoryAttributeDefinition[];
+}

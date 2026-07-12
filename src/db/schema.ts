@@ -1,14 +1,21 @@
-import { pgTable, serial, varchar, text, integer, numeric, jsonb, pgEnum, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey } from "drizzle-orm/pg-core";
 
-import { ProductsAttributes } from "./types";
+import { ProductsAttributes, CategoryMetadata } from "./types";
 
-export const productCategoryEnum = pgEnum("product_category", ["beer"]);
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  // Configuración adicional de la categoría (ej: qué atributos requiere, qué imagen usar)
+  metadata: jsonb("metadata").$type<CategoryMetadata>(),
+});
 
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
   description: text("description"),
-  category: productCategoryEnum("category").notNull(),
+  categoryId: integer("category_id").notNull().references(() => categories.id),
   imageUrl: varchar("image_url", { length: 2048 }),
   // Strongly typed dynamic attributes
   attributes: jsonb("attributes").$type<ProductsAttributes>(),
