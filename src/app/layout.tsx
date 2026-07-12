@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900">
         <ClerkProvider>
-          <header className="sticky top-0 z-50 w-full border-b border-red-100 bg-white">
+          <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white">
             <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
               <div className="flex items-center gap-3 shrink-0">
                 <img src="/logo.jpg" alt="Macedonia Cervezas" className="h-10 w-10 shrink-0 rounded-full object-cover border border-red-200" />
@@ -52,7 +52,7 @@ export default function RootLayout({
             </div>
           </header>
           <main className="flex-1">{children}</main>
-          <footer className="border-t py-6 text-center text-sm text-zinc-500 bg-white">
+          <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 bg-white">
             <p>© {new Date().getFullYear()} Macedonia Cervezas. Todos los derechos reservados.</p>
           </footer>
         </ClerkProvider>

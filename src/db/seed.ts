@@ -26,49 +26,49 @@ async function seed() {
         name: "Kölsch",
         description: "Cerveza rubia de origen alemán, ligera, refrescante y con un sutil frutado. Perfecta para cualquier ocasión.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 18, abv: 4.8, color: "Rubia pálida" }
       },
       {
         name: "Blonde Ale",
         description: "Clásica rubia americana. Suave, maltosa con un final limpio y muy poco amargor.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 15, abv: 4.5, color: "Dorado brillante" }
       },
       {
         name: "Irish Red Ale",
         description: "Cerveza rojiza con notas a caramelo y toffee. Amargor bajo y cuerpo medio, ideal para los amantes de la malta.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 22, abv: 5.2, color: "Rojo cobrizo" }
       },
       {
         name: "Porter",
         description: "Cerveza negra de estilo inglés. Notas a chocolate amargo y café tostado. Sedosa y robusta.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 25, abv: 5.5, color: "Negro opaco" }
       },
       {
         name: "Sweet Stout",
         description: "Cerveza negra cremosa y dulce. Su adición de lactosa le aporta un cuerpo denso y notas a chocolate con leche.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 20, abv: 5.0, color: "Negro intenso" }
       },
       {
         name: "English IPA",
         description: "La IPA original. Equilibrio perfecto entre el amargor terroso/herbal del lúpulo inglés y una base sólida de malta caramelo.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 45, abv: 6.0, color: "Ámbar" }
       },
       {
         name: "Honey Beer",
         description: "Cerveza rubia elaborada con miel pura. Un toque dulzón natural con un final seco que pide otro trago.",
         category: "beer",
-        imageUrl: "/kolsh.png",
+        imageUrl: "/kolsch.png",
         attributes: { ibu: 12, abv: 6.5, color: "Dorado profundo" }
       }
     ]).returning();

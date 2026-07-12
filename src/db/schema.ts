@@ -10,6 +10,7 @@ export const products = pgTable("products", {
   description: text("description"),
   category: productCategoryEnum("category").notNull(),
   imageUrl: varchar("image_url", { length: 2048 }),
+  // Strongly typed dynamic attributes
   attributes: jsonb("attributes").$type<ProductsAttributes>(),
 });
 
