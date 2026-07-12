@@ -97,7 +97,7 @@ export function ProductCard({
             </div>
           ) : (
             <div className="mb-4">
-              <span className="text-sm text-zinc-400 italic">Out of stock</span>
+              <span className="text-sm text-zinc-400 italic">Fuera de stock</span>
             </div>
           )}
         </div>
