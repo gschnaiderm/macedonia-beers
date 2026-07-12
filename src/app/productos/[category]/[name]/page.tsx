@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import type { BeerAttributes } from "@/db/types";
+import type { CategoryMetadata } from "@/db/types";
 
 interface PageProps {
   params: Promise<{
@@ -44,10 +44,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const beerAttrs = product.attributes as BeerAttributes | undefined;
+  const categoryMetadata = product.categoryMetadata as CategoryMetadata | undefined;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Breadcrumb / Back button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
@@ -89,18 +89,22 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </h1>
 
             {/* Badges */}
-            {beerAttrs && (
-              <div className="flex gap-3 mb-6">
-                {beerAttrs.abv && (
-                  <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                    {beerAttrs.abv}% ABV
-                  </span>
-                )}
-                {beerAttrs.ibu && (
-                  <span className="inline-flex items-center rounded-full bg-zinc-50 px-3 py-1.5 text-sm font-semibold text-zinc-600 ring-1 ring-inset ring-zinc-500/10">
-                    {beerAttrs.ibu} IBU
-                  </span>
-                )}
+            {categoryMetadata?.attributesSchema && product.attributes && (
+              <div className="flex flex-wrap gap-3 mb-6">
+                {categoryMetadata.attributesSchema
+                  .filter((schemaItem) => schemaItem.renderAsBadge)
+                  .map((schemaItem) => {
+                    const val = (product.attributes as any)[schemaItem.key];
+                    if (val === undefined || val === null) return null;
+                    return (
+                      <span
+                        key={schemaItem.key}
+                        className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20"
+                      >
+                        {schemaItem.label}: {val}{schemaItem.unit || ""}
+                      </span>
+                    );
+                  })}
               </div>
             )}
 

@@ -120,8 +120,17 @@ export async function getProductsByCategory(
 export async function getProductByName(name: string): Promise<ProductWithStock | null> {
   // 1. Get product by name
   const productArr = await db
-    .select()
+    .select({
+      id: products.id,
+      name: products.name,
+      description: products.description,
+      categoryId: products.categoryId,
+      imageUrl: products.imageUrl,
+      attributes: products.attributes,
+      categoryMetadata: categories.metadata,
+    })
     .from(products)
+    .innerJoin(categories, eq(products.categoryId, categories.id))
     .where(eq(products.name, name))
     .limit(1);
 
