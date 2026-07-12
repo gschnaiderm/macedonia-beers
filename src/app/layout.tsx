@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import { getCachedCategories } from "@/db/queries";
 import { AuthControls } from "../components/auth-controls";
 import { Dropdown } from "../components/dropdown";
 import type { Metadata } from "next";
@@ -20,11 +21,18 @@ export const metadata: Metadata = {
   description: "Macedonia Cervezas - Cerveza artesanal gasificada naturalmente, elaborada en Trenque Lauquen, Buenos Aires, Argentina.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categoriesList = await getCachedCategories();
+  const dropdownOptions = categoriesList.map((cat) => ({
+    label: cat.name,
+    href: `/productos/${cat.slug}`,
+    dotColorClass: (cat.metadata as any)?.dotColorClass || "bg-amber-500",
+  }));
+
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900">
@@ -38,11 +46,7 @@ export default function RootLayout({
               <nav className="flex items-center gap-4 sm:gap-6 text-sm font-semibold">
                 <Dropdown
                   title="Bebidas"
-                  options={[
-                    { label: "Cervezas", href: "/cervezas", dotColorClass: "bg-amber-500" },
-                    { label: "Espirituosas", href: "/espirituosas", dotColorClass: "bg-violet-500" },
-                    { label: "Vermouth", href: "/vermouth", dotColorClass: "bg-rose-600" }
-                  ]}
+                  options={dropdownOptions}
                   titleColor="text-zinc-600"
                   hoverColor="hover:text-red-600"
                 />

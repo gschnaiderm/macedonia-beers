@@ -1,4 +1,5 @@
 import { inArray, eq, sql, type InferSelectModel } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { db } from "./index";
 import { products, productStock, categories } from "./schema";
 
@@ -168,6 +169,18 @@ export async function getCategoryBySlug(slug: string): Promise<InferSelectModel<
     .from(categories)
     .where(eq(categories.slug, slug))
     .limit(1);
-    
+
   return categoryArr.length > 0 ? categoryArr[0] : null;
 }
+
+/**
+ * Fetches all categories, caching the result to avoid unnecessary database hits.
+ * Refreshes every hour (3600 seconds).
+ */
+export const getCachedCategories = unstable_cache(
+  async () => {
+    return await db.select().from(categories);
+  },
+  ['categories-list'],
+  { revalidate: 3600 }
+);
