@@ -51,7 +51,21 @@ export default function RootLayout({
               </nav>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 relative bg-white">
+            {/* Background Pattern Global */}
+            <div 
+              className="absolute inset-0 z-0 pointer-events-none"
+              style={{
+                backgroundImage: "url('/background-logo.png')",
+                backgroundRepeat: "space",
+                backgroundSize: "120px",
+                opacity: 0.04
+              }}
+            />
+            <div className="relative z-10 h-full">
+              {children}
+            </div>
+          </main>
           <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 bg-white">
             <p>© {new Date().getFullYear()} Macedonia Cervezas. Todos los derechos reservados.</p>
           </footer>

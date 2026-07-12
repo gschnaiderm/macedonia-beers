@@ -11,17 +11,7 @@ export default async function Home() {
   const randomProducts = await getRandomProducts(3);
 
   return (
-    <div className="relative flex flex-col items-center justify-center py-20 px-4 sm:px-6 lg:px-8 min-h-screen">
-      
-      {/* Background Pattern */}
-      <div 
-        className="absolute inset-0 -z-10 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: "url('/background-logo.png')",
-          backgroundRepeat: "space", // Distributes images with spacing
-          backgroundSize: "120px"
-        }}
-      />
+    <div className="flex flex-col items-center justify-center py-20 px-4 sm:px-6 lg:px-8 min-h-screen">
 
       {/* Hero Section */}
       <div className="max-w-4xl w-full text-center space-y-8 mb-20 relative z-10">
