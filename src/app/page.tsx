@@ -1,55 +1,70 @@
-import Image from "next/image";
+import { getRandomProducts } from "@/db/queries";
+import { ProductCard } from "@/components/product-card";
+import { SectionTitle } from "@/components/section-title";
 
-export default function Home() {
+// Force this page to render dynamically on the server
+// so the random beer selection changes on every request.
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  // Query 3 random products directly from the Server Component (0 latency)
+  const randomProducts = await getRandomProducts(3);
+
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full text-center space-y-8">
+    <div className="relative flex flex-col items-center justify-center py-20 px-4 sm:px-6 lg:px-8 min-h-screen">
+      
+      {/* Background Pattern */}
+      <div 
+        className="absolute inset-0 -z-10 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: "url('/background-logo.png')",
+          backgroundRepeat: "space", // Distributes images with spacing
+          backgroundSize: "120px"
+        }}
+      />
+
+      {/* Hero Section */}
+      <div className="max-w-4xl w-full text-center space-y-8 mb-20 relative z-10">
         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-zinc-900">
-          Bienvenido a <span className="text-red-600">Macedonia Cervezas</span>
+          Bienvenido a <span className="text-red-700">Macedonia</span>
         </h1>
 
         <p className="text-xl text-zinc-600 max-w-2xl mx-auto">
-          Plataforma E-Commerce Híbrida en Desarrollo.
+          Explora nuestra selección de cervezas artesanales. Calidad, variedad y el mejor sabor directo a tu vaso.
         </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 text-left">
-          {/* Card: Tienda */}
-          <div className="rounded-2xl border border-red-100 bg-white p-8 shadow-sm hover:shadow-md transition-all hover:border-red-300">
-            <div className="h-12 w-12 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-zinc-900 mb-3">1. Tienda de Cervezas</h3>
-            <p className="text-zinc-600 mb-4">
-              Venta de cerveza en diferentes presentaciones y merchandising.
-            </p>
-            <ul className="text-sm text-zinc-500 space-y-2 list-disc list-inside">
-              <li>Manejo de carrito de compras</li>
-              <li>Checkout con Mercado Pago</li>
-              <li>Actualización de stock transaccional</li>
-            </ul>
-          </div>
-
-          {/* Card: Alquiler */}
-          <div className="rounded-2xl border border-red-100 bg-white p-8 shadow-sm hover:shadow-md transition-all hover:border-red-300">
-            <div className="h-12 w-12 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-zinc-900 mb-3">2. Alquiler de Chopperas</h3>
-            <p className="text-zinc-600 mb-4">
-              Sistema de reservas por fecha con validación de disponibilidad.
-            </p>
-            <ul className="text-sm text-zinc-500 space-y-2 list-disc list-inside">
-              <li>Calendario interactivo con Zonas Horarias (ART)</li>
-              <li>Flujo de estados de reserva (Deposit, Delivery)</li>
-              <li>Pago de garantía/seña obligatoria</li>
-            </ul>
-          </div>
-        </div>
       </div>
+
+      {/* Random Products Grid */}
+      <div className="max-w-6xl w-full relative z-10">
+        <SectionTitle
+          title="Nuestros productos"
+          badge="En Stock"
+        />
+
+        {randomProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {randomProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                category={product.category}
+                imageUrl={product.imageUrl}
+                stockOptions={product.stockOptions}
+                attributes={product.attributes}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white/80 backdrop-blur-sm rounded-2xl border border-zinc-100 shadow-sm">
+            <p className="text-zinc-500">
+              No hay productos disponibles en este momento. Vuelve a revisar más tarde.
+            </p>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
