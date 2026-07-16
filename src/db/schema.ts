@@ -1,6 +1,16 @@
-import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey, timestamp } from "drizzle-orm/pg-core";
 
 import { ProductsAttributes, CategoryMetadata } from "./types";
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  clerkId: varchar("clerk_id", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull(),
+  firstName: varchar("first_name", { length: 255 }),
+  lastName: varchar("last_name", { length: 255 }),
+  role: varchar("role", { length: 50 }).notNull().default("customer"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
