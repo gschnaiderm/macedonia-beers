@@ -12,6 +12,22 @@ export type ProductWithStock = InferSelectModel<typeof products> & {
   }[];
 };
 
+type RawStockRow = InferSelectModel<typeof productStock>;
+
+/**
+ * Filters stock rows to only those belonging to a specific product with
+ * available quantity > 0, then sorts them by size ascending.
+ */
+function filterAndSortAvailableStock(
+  stocks: RawStockRow[],
+  productId: number
+): { sizeCm3: number; price: number }[] {
+  return stocks
+    .filter((s) => s.productId === productId && s.quantity > 0)
+    .map((s) => ({ sizeCm3: s.sizeCm3, price: parseFloat(s.price) }))
+    .sort((a, b) => a.sizeCm3 - b.sizeCm3);
+}
+
 /**
  * Fetches a random list of products along with their available stock sizes and prices.
  * @param limit Amount of products to return
@@ -44,22 +60,10 @@ export async function getRandomProducts(limit: number = 3): Promise<ProductWithS
     .where(inArray(productStock.productId, productIds));
 
   // 3. Format data for the UI
-  return randomProducts.map((product) => {
-    // Filter stocks belonging to this product that have available quantity
-    const availableStock = stocks
-      .filter((s) => s.productId === product.id && s.quantity > 0)
-      .map(s => ({
-        sizeCm3: s.sizeCm3,
-        price: parseFloat(s.price)
-      }))
-      // Order by size ascending
-      .sort((a, b) => a.sizeCm3 - b.sizeCm3);
-
-    return {
-      ...product,
-      stockOptions: availableStock,
-    };
-  });
+  return randomProducts.map((product) => ({
+    ...product,
+    stockOptions: filterAndSortAvailableStock(stocks, product.id),
+  }));
 }
 
 /**
@@ -96,22 +100,10 @@ export async function getProductsByCategory(
     .where(inArray(productStock.productId, productIds));
 
   // Format data for the UI
-  return categoryProducts.map((product) => {
-    // Filter stocks belonging to this product that have available quantity
-    const availableStock = stocks
-      .filter((s) => s.productId === product.id && s.quantity > 0)
-      .map(s => ({
-        sizeCm3: s.sizeCm3,
-        price: parseFloat(s.price)
-      }))
-      // Order by size ascending
-      .sort((a, b) => a.sizeCm3 - b.sizeCm3);
-
-    return {
-      ...product,
-      stockOptions: availableStock,
-    };
-  });
+  return categoryProducts.map((product) => ({
+    ...product,
+    stockOptions: filterAndSortAvailableStock(stocks, product.id),
+  }));
 }
 
 /**
@@ -145,17 +137,9 @@ export async function getProductByName(name: string): Promise<ProductWithStock |
     .where(eq(productStock.productId, product.id));
 
   // 3. Format data for the UI
-  const availableStock = stocks
-    .filter((s) => s.quantity > 0)
-    .map(s => ({
-      sizeCm3: s.sizeCm3,
-      price: parseFloat(s.price)
-    }))
-    .sort((a, b) => a.sizeCm3 - b.sizeCm3);
-
   return {
     ...product,
-    stockOptions: availableStock,
+    stockOptions: filterAndSortAvailableStock(stocks, product.id),
   };
 }
 

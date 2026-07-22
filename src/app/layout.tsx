@@ -1,8 +1,12 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/sonner";
 import { getCachedCategories } from "@/db/queries";
 import { AuthControls } from "../components/auth-controls";
 import { Dropdown } from "../components/dropdown";
 import type { Metadata } from "next";
+import type { InferSelectModel } from "drizzle-orm";
+import type { categories } from "@/db/schema";
+import type { CategoryMetadata } from "@/db/types";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -21,17 +25,24 @@ export const metadata: Metadata = {
   description: "Macedonia Cervezas - Cerveza artesanal gasificada naturalmente, elaborada en Trenque Lauquen, Buenos Aires, Argentina.",
 };
 
+type Category = InferSelectModel<typeof categories>;
+
+/** Maps raw category rows to the shape expected by the Dropdown component. */
+function mapCategoriesToDropdownOptions(cats: Category[]) {
+  return cats.map((cat) => ({
+    label: cat.name,
+    href: `/productos/${cat.slug}`,
+    dotColorClass: (cat.metadata as CategoryMetadata & { dotColorClass?: string })?.dotColorClass ?? "bg-amber-500",
+  }));
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const categoriesList = await getCachedCategories();
-  const dropdownOptions = categoriesList.map((cat) => ({
-    label: cat.name,
-    href: `/productos/${cat.slug}`,
-    dotColorClass: (cat.metadata as any)?.dotColorClass || "bg-amber-500",
-  }));
+  const dropdownOptions = mapCategoriesToDropdownOptions(categoriesList);
 
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
@@ -57,7 +68,7 @@ export default async function RootLayout({
           </header>
           <main className="flex-1 relative bg-white">
             {/* Background Pattern Global */}
-            <div 
+            <div
               className="absolute inset-0 z-0 pointer-events-none"
               style={{
                 backgroundImage: "url('/background-logo.png')",
@@ -73,6 +84,7 @@ export default async function RootLayout({
           <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 bg-white">
             <p>© {new Date().getFullYear()} Macedonia Cervezas. Todos los derechos reservados.</p>
           </footer>
+          <Toaster richColors closeButton />
         </ClerkProvider>
       </body>
     </html>
