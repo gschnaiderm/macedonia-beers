@@ -1,4 +1,5 @@
-import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey, timestamp, check } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 import { ProductsAttributes, CategoryMetadata } from "./types";
 
@@ -39,5 +40,6 @@ export const productStock = pgTable("product_stock", {
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.productId, table.sizeCm3] }),
+    quantityCheck: check("quantity_chk", sql`${table.quantity} >= 0`),
   };
 });
