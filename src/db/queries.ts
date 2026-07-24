@@ -1,7 +1,7 @@
 import { inArray, eq, sql, type InferSelectModel } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "./index";
-import { products, productStock, categories } from "./schema";
+import { products, productStock, categories, users } from "./schema";
 
 export type ProductWithStock = InferSelectModel<typeof products> & {
   categorySlug?: string;
@@ -168,3 +168,17 @@ export const getCachedCategories = unstable_cache(
   ['categories-list'],
   { revalidate: 3600 }
 );
+
+/**
+ * Fetches the internal user DB row by their Clerk ID.
+ * @param clerkId The user's ID from Clerk Auth
+ */
+export async function getUserByClerkId(clerkId: string): Promise<InferSelectModel<typeof users> | null> {
+  const userArr = await db
+    .select()
+    .from(users)
+    .where(eq(users.clerkId, clerkId))
+    .limit(1);
+
+  return userArr.length > 0 ? userArr[0] : null;
+}

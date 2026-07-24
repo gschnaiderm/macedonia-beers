@@ -12,7 +12,11 @@ export type ActionErrorCode =
 	| "DUPLICATE_PRODUCT_STOCK"
 	| "STOCK_NOT_FOUND"
 	| "VALIDATION_ERROR"
-	| "INTERNAL_SERVER_ERROR";
+	| "INTERNAL_SERVER_ERROR"
+	| "UNAUTHORIZED"
+	| "EQUIPMENT_UNAVAILABLE"
+	| "INVALID_DATES"
+	| "EQUIPMENT_NOT_FOUND";
 
 export interface ActionError {
 	code: ActionErrorCode;
