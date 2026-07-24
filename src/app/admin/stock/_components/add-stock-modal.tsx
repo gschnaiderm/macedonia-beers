@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { createProductStock } from "@/actions/stock-actions";
 import { createStockSchema } from "@/lib/validations/stock";
+import { getErrorMessage } from "@/locales/es/errors";
 
 interface ProductOption {
 	id: number;
@@ -96,7 +97,7 @@ export function AddStockModal({ products }: AddStockModalProps) {
 				resetForm();
 				setOpen(false);
 			} else {
-				toast.error(result.error ?? "Error al crear el stock.");
+				toast.error(getErrorMessage(result.error?.code));
 			}
 		});
 	}
