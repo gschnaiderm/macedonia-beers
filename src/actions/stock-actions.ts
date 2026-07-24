@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { productStock } from "@/db/schema";
 import {
@@ -10,18 +10,12 @@ import {
 	type AdjustStockInput,
 	type CreateStockInput,
 } from "@/lib/validations/stock";
-import { sql } from "drizzle-orm";
+import type { ActionResponse } from "@/lib/action-response";
 import type { ZodSchema } from "zod";
 
 
 const ADMIN_STOCK_PATH = "/admin/stock";
 
-
-export interface ActionResponse<T = undefined> {
-	success: boolean;
-	data?: T;
-	error?: string;
-}
 
 // Auxiliary functions
 
@@ -29,12 +23,18 @@ export interface ActionResponse<T = undefined> {
 function parseInput<T>(
 	schema: ZodSchema<T>,
 	raw: unknown
-): { success: true; data: T } | { success: false; error: string } {
+): { success: true; data: T } | { success: false; response: ActionResponse } {
 	const result = schema.safeParse(raw);
 	if (!result.success) {
 		return {
 			success: false,
-			error: result.error.issues[0]?.message ?? "Datos inválidos.",
+			response: {
+				success: false,
+				error: {
+					code: "VALIDATION_ERROR",
+					message: result.error.issues[0]?.message ?? "Datos inválidos.",
+				},
+			},
 		};
 	}
 	return { success: true, data: result.data };
@@ -42,12 +42,20 @@ function parseInput<T>(
 
 /** Returns true if a DB error is a unique-constraint violation on the composite PK. */
 function isDuplicateKeyError(err: unknown): boolean {
-	return err instanceof Error && err.message.includes("duplicate key");
+	if (err instanceof Error) {
+		if (err.message.includes("duplicate key")) return true;
+		if (err.cause instanceof Error && err.cause.message.includes("duplicate key")) return true;
+	}
+	return false;
 }
 
 /** Returns true if a DB error is a check-constraint violation for quantity. */
 function isCheckConstraintError(err: unknown): boolean {
-	return err instanceof Error && err.message.includes("quantity_chk");
+	if (err instanceof Error) {
+		if (err.message.includes("quantity_chk")) return true;
+		if (err.cause instanceof Error && err.cause.message.includes("quantity_chk")) return true;
+	}
+	return false;
 }
 
 
@@ -101,7 +109,7 @@ export async function adjustStockByDelta(
 	raw: AdjustStockInput
 ): Promise<ActionResponse> {
 	const parsed = parseInput(adjustStockSchema, raw);
-	if (!parsed.success) return { success: false, error: parsed.error };
+	if (!parsed.success) return parsed.response;
 
 	const { productId, sizeCm3, delta } = parsed.data;
 
@@ -109,7 +117,13 @@ export async function adjustStockByDelta(
 		const found = await dbAdjustStockByDelta(productId, sizeCm3, delta);
 
 		if (!found) {
-			return { success: false, error: "No se encontró el registro de stock." };
+			return {
+				success: false,
+				error: {
+					code: "STOCK_NOT_FOUND",
+					message: "No se encontró el registro de stock.",
+				},
+			};
 		}
 
 		revalidatePath(ADMIN_STOCK_PATH);
@@ -118,11 +132,20 @@ export async function adjustStockByDelta(
 		if (isCheckConstraintError(err)) {
 			return {
 				success: false,
-				error: "Stock insuficiente: no se puede dejar el stock en negativo.",
+				error: {
+					code: "NEGATIVE_STOCK_ATTEMPT",
+					message: "Stock insuficiente: no se puede dejar el stock en negativo.",
+				},
 			};
 		}
 		console.error("[adjustStockByDelta]", err);
-		return { success: false, error: "Error al ajustar el stock." };
+		return {
+			success: false,
+			error: {
+				code: "INTERNAL_SERVER_ERROR",
+				message: "Error al ajustar el stock.",
+			},
+		};
 	}
 }
 
@@ -134,7 +157,7 @@ export async function createProductStock(
 	raw: CreateStockInput
 ): Promise<ActionResponse> {
 	const parsed = parseInput(createStockSchema, raw);
-	if (!parsed.success) return { success: false, error: parsed.error };
+	if (!parsed.success) return parsed.response;
 
 	const { productId, sizeCm3, quantity, price } = parsed.data;
 
@@ -144,9 +167,21 @@ export async function createProductStock(
 		return { success: true };
 	} catch (err: unknown) {
 		if (isDuplicateKeyError(err)) {
-			return { success: false, error: "Ya existe un registro con ese producto y tamaño." };
+			return {
+				success: false,
+				error: {
+					code: "DUPLICATE_PRODUCT_STOCK",
+					message: "Ya existe un registro con ese producto y tamaño.",
+				},
+			};
 		}
 		console.error("[createProductStock]", err);
-		return { success: false, error: "Error al crear el registro de stock." };
+		return {
+			success: false,
+			error: {
+				code: "INTERNAL_SERVER_ERROR",
+				message: "Error al crear el registro de stock.",
+			},
+		};
 	}
 }

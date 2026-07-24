@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, MinusIcon, Loader2Icon, PackageIcon } from "lucide-react";
 import { adjustStockByDelta } from "@/actions/stock-actions";
+import { getErrorMessage } from "@/locales/es/errors";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ export function StockCard({
 					`Stock ${delta > 0 ? "aumentado" : "reducido"} correctamente.`
 				);
 			} else {
-				toast.error(result.error ?? "Error al ajustar el stock.");
+				toast.error(getErrorMessage(result.error?.code));
 			}
 		});
 	}
