@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { equipments, equipmentRentals } from "./schema";
 
 // Types definition for db JSONB "attributes" field
 
@@ -25,3 +26,9 @@ export interface CategoryAttributeDefinition {
 export interface CategoryMetadata {
   attributesSchema?: CategoryAttributeDefinition[];
 }
+
+export type Equipment = typeof equipments.$inferSelect;
+export type NewEquipment = typeof equipments.$inferInsert;
+
+export type EquipmentRental = typeof equipmentRentals.$inferSelect;
+export type NewEquipmentRental = typeof equipmentRentals.$inferInsert;
