@@ -6,6 +6,10 @@ const ERROR_MESSAGES_ES: Record<ActionErrorCode, string> = {
 	STOCK_NOT_FOUND: "No se encontró el registro de stock.",
 	VALIDATION_ERROR: "Los datos ingresados no son válidos.",
 	INTERNAL_SERVER_ERROR: "Ocurrió un error inesperado. Intentá de nuevo más tarde.",
+	UNAUTHORIZED: "Debes iniciar sesión para realizar esta acción.",
+	EQUIPMENT_UNAVAILABLE: "El equipamiento ya no se encuentra disponible para esas fechas.",
+	INVALID_DATES: "Las fechas seleccionadas no son válidas.",
+	EQUIPMENT_NOT_FOUND: "No se encontró el equipamiento solicitado.",
 };
 
 const DEFAULT_ERROR_MESSAGE = "Ocurrió un error inesperado. Intentá de nuevo más tarde.";

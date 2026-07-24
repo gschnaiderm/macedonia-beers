@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey, timestamp, check } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, numeric, jsonb, primaryKey, timestamp, check, boolean, date } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 import { ProductsAttributes, CategoryMetadata } from "./types";
@@ -42,4 +42,36 @@ export const productStock = pgTable("product_stock", {
     pk: primaryKey({ columns: [table.productId, table.sizeCm3] }),
     quantityCheck: check("quantity_chk", sql`${table.quantity} >= 0`),
   };
+});
+
+export const equipments = pgTable("equipments", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  dailyPrice: numeric("daily_price", { precision: 10, scale: 2 }).notNull(),
+  deposit: numeric("deposit", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: varchar("image_url", { length: 2048 }),
+  isAvailable: boolean("is_available").notNull().default(true),
+});
+
+export const rentalStatuses = [
+  "pending_payment", 
+  "reserved", 
+  "delivered", 
+  "returned_ok", 
+  "deposit_retained",
+  "cancelled"
+] as const;
+
+export const equipmentRentals = pgTable("equipment_rentals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  equipmentId: integer("equipment_id").notNull().references(() => equipments.id),
+  startDate: date("start_date", { mode: "string" }).notNull(),
+  endDate: date("end_date", { mode: "string" }).notNull(),
+  status: varchar("status", { enum: rentalStatuses, length: 50 }).notNull().default("pending_payment"),
+  totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
+  depositAmount: numeric("deposit_amount", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
