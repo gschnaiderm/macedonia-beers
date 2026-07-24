@@ -28,8 +28,10 @@ El modelo de datos y la lógica de negocio deben soportar dos flujos completamen
 ## 3. Reglas de Arquitectura Frontend & Backend
 - **Server Components Primero:** Todos los componentes en `/app` son Server Components. Solo usar la directiva `'use client'` en la hoja más extrema del árbol de componentes donde se requiera interactividad pura (ej: un DatePicker para la choppera, botones de carrito).
 - **Mutación de Datos Segura:** Usar exclusivamente `Server Actions` para las mutaciones iniciadas por el usuario. Toda Server Action debe comenzar validando los datos de entrada con `Zod`.
-- **Patrón de Manejo de Errores:** Las Server Actions deben devolver siempre respuestas estandarizadas, nunca lanzar excepciones crudas al cliente. Formato esperado:
-  `{ success: boolean, data?: any, error?: string }`
+- **Patrón de Manejo de Errores:** Las Server Actions deben devolver siempre respuestas estandarizadas usando el contrato compartido en `src/lib/action-response.ts`, nunca lanzar excepciones crudas al cliente. 
+  Formato esperado:
+  `{ success: boolean, data?: any, error?: { code: string, message: string, details?: any } }`
+  Los textos en la UI se deben obtener mapeando el `code` a través de la capa de i18n (`src/locales/es/errors.ts`).
 - **Caché y Rendimiento:** Utilizar `revalidatePath` y `revalidateTag` agresivamente para mantener el catálogo de cervezas estático y veloz, revalidándolo solo cuando el administrador actualiza un precio o producto.
 
 ## 4. Estándares de Código y Seguridad
